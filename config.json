@@ -1,0 +1,20 @@
+{
+	"discord": {
+		"login_token": "",
+		"interval": 900,
+		"pairs": [
+			"bluna_luna"
+		],
+		"thresholds": {
+			"bluna_luna": [1.4, 1.4]
+		},
+		"log_channel": "",
+		"ping_list": [""]
+	},
+	"terraswap": {
+		"mainnet_url": "https://lcd.terra.dev",
+		"pairs": {
+			"bluna_luna": "terra1jxazgm67et0ce260kvrpfv50acuushpjsz2y0p"
+		}
+	}
+}
