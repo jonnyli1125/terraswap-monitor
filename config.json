@@ -1,20 +1,18 @@
 {
-	"discord": {
-		"login_token": "",
-		"interval": 900,
-		"pairs": [
-			"bluna_luna"
-		],
-		"thresholds": {
-			"bluna_luna": [1.4, 1.4]
-		},
-		"log_channel": "",
-		"ping_list": [""]
-	},
-	"terraswap": {
-		"mainnet_url": "https://lcd.terra.dev",
-		"pairs": {
-			"bluna_luna": "terra1jxazgm67et0ce260kvrpfv50acuushpjsz2y0p"
-		}
-	}
+  "discord": {
+    "login_token": "",
+    "interval": 300
+    "thresholds": {
+      "bluna_luna": 1.04
+    },
+    "log_channel": "",
+    "ping_list": [""]
+  },
+  "terraswap": {
+    "mainnet_url": "https://lcd.terra.dev",
+    "pairs": {
+      "bluna_luna": "terra1jxazgm67et0ce260kvrpfv50acuushpjsz2y0p",
+      "ust_luna": "terra1tndcaqxkpc5ce9qee5ggqf430mr2z3pefe5wj6"
+    }
+  }
 }
