@@ -6,7 +6,8 @@
       "bluna_luna": 1.04
     },
     "log_channel": "",
-    "ping_list": [""]
+    "ping_list": [""],
+    "command_prefix": "!"
   },
   "terraswap": {
     "mainnet_url": "https://lcd.terra.dev",

@@ -11,11 +11,11 @@ class TerraswapMonitorBot(discord.ext.commands.Bot):
         self.rates = {}
         self.thresholds = self.config['thresholds']
         for pair in self.thresholds:
-            self.rates[pair] = [(float('inf'), float('inf'))]
+            self.rates[pair] = [(0, 0)]
         self.interval = self.config['interval']
         self.log_channel = None
         self.ping_list = self.config['ping_list']
-        super().__init__(command_prefix='!')
+        super().__init__(command_prefix=self.config['command_prefix'])
 
     def run(self):
         super().run(self.config['login_token'])
@@ -41,7 +41,7 @@ class TerraswapMonitorBot(discord.ext.commands.Bot):
                 "Luna to UST   - {} UST per Luna" +
 				"```").format(luna_to_bluna, bluna_to_luna, luna_to_ust)
             # TODO: generalize this logic eventually
-            if (luna_to_bluna > threshold and rates[0] < threshold) or (bluna_to_luna > threshold and rates[1] < threshold):
+            if (luna_to_bluna >= threshold and rates[0] < threshold) or (bluna_to_luna >= threshold and rates[1] < threshold):
                 for uid in self.ping_list:
                     msg += "<@{}> ".format(uid)
             self.rates['bluna_luna'] = [luna_to_bluna, bluna_to_luna]
@@ -63,8 +63,9 @@ async def interval(ctx, val:int=None):
     await ctx.send("Updated interval to {} seconds.".format(val))
 
 @bot.command()
-async def threshold(ctx, pair:str=None, val:float=None):
-    if not pair:
+async def threshold(ctx, val:float=None):
+    pair = "bluna_luna" # temp
+    if not pair or pair not in bot.thresholds:
         pairs = ', '.join(['`{}`'.format(p) for p in bot.thresholds])
         await ctx.send("Current pairs with thresholds: {}".format(pairs))
         return
@@ -72,6 +73,7 @@ async def threshold(ctx, pair:str=None, val:float=None):
         await ctx.send("Current threshold of pair `{}`: {}".format(pair, bot.thresholds[pair]))
         return
     bot.thresholds[pair] = val
+    bot.rates[pair] = [0, 0]
     await ctx.send("Updated threshold of pair `{}` to {}.".format(pair, val))
 
 if __name__ == '__main__':
