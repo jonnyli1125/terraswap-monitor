@@ -11,7 +11,7 @@ class TerraswapMonitorBot(discord.ext.commands.Bot):
         self.rates = {}
         self.thresholds = self.config['thresholds']
         for pair in self.thresholds:
-            self.rates[pair] = [(0, 0)]
+            self.rates[pair] = [(0, float('inf'))]
         self.interval = self.config['interval']
         self.log_channel = None
         self.ping_list = self.config['ping_list']
@@ -41,7 +41,7 @@ class TerraswapMonitorBot(discord.ext.commands.Bot):
                 "Luna to UST   - {} UST per Luna" +
 				"```").format(luna_to_bluna, bluna_to_luna, luna_to_ust)
             # TODO: generalize this logic eventually
-            if (luna_to_bluna >= threshold and rates[0] < threshold) or (bluna_to_luna >= threshold and rates[1] < threshold):
+            if (luna_to_bluna >= threshold[0] and rates[0] < threshold[0]) or (bluna_to_luna <= threshold[1] and rates[1] > threshold[1]):
                 for uid in self.ping_list:
                     msg += "<@{}> ".format(uid)
             self.rates['bluna_luna'] = [luna_to_bluna, bluna_to_luna]
@@ -63,18 +63,15 @@ async def interval(ctx, val:int=None):
     await ctx.send("Updated interval to {} seconds.".format(val))
 
 @bot.command()
-async def threshold(ctx, val:float=None):
+async def threshold(ctx, forward_val:float=None, backward_val:float=None):
     pair = "bluna_luna" # temp
-    if not pair or pair not in bot.thresholds:
-        pairs = ', '.join(['`{}`'.format(p) for p in bot.thresholds])
-        await ctx.send("Current pairs with thresholds: {}".format(pairs))
+    if not forward_val or not backward_val:
+        msg = "Current thresholds: {}\nUse `{}threshold <forward_val> <backward_val>` to set values.".format(bot.thresholds[pair], bot.command_prefix)
+        await ctx.send(msg)
         return
-    if not val:
-        await ctx.send("Current threshold of pair `{}`: {}".format(pair, bot.thresholds[pair]))
-        return
-    bot.thresholds[pair] = val
-    bot.rates[pair] = [0, 0]
-    await ctx.send("Updated threshold of pair `{}` to {}.".format(pair, val))
+    bot.thresholds[pair] = [forward_val, backward_val]
+    bot.rates[pair] = [0, float('inf')]
+    await ctx.send("Updated thresholds to {}.".format(bot.thresholds[pair]))
 
 if __name__ == '__main__':
     try:

@@ -3,7 +3,7 @@
     "login_token": "",
     "interval": 300
     "thresholds": {
-      "bluna_luna": 1.04
+      "bluna_luna": [1.04, 1.01]
     },
     "log_channel": "",
     "ping_list": [""],
