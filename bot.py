@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import asyncio
 import json
+import traceback
 import discord.ext.commands
 from terraswap import TerraswapMonitor
 
@@ -29,23 +30,28 @@ class TerraswapMonitorBot(discord.ext.commands.Bot):
     async def monitor(self):
         # TODO: use discord.ext.tasks eventually
         while True:
-            luna_to_bluna = await self.ts.get_luna_to_bluna_rate()
-            bluna_to_luna = await self.ts.get_bluna_to_luna_rate()
-            luna_to_ust = await self.ts.get_luna_to_ust_rate()
-            rates = self.rates['bluna_luna']
-            threshold = self.thresholds['bluna_luna']
-            msg = (
-				"```" +
-				"Luna to bLUNA - {} bLUNA per Luna\n" +
-				"bLUNA to Luna - {} bLUNA per Luna\n" +
-                "Luna to UST   - {} UST per Luna" +
-				"```").format(luna_to_bluna, bluna_to_luna, luna_to_ust)
-            # TODO: generalize this logic eventually
-            if (luna_to_bluna >= threshold[0] and rates[0] < threshold[0]) or (bluna_to_luna <= threshold[1] and rates[1] > threshold[1]):
-                for uid in self.ping_list:
-                    msg += "<@{}> ".format(uid)
-            self.rates['bluna_luna'] = [luna_to_bluna, bluna_to_luna]
-            await self.log_channel.send(msg)
+            try:
+                luna_to_bluna = await self.ts.get_luna_to_bluna_rate()
+                bluna_to_luna = await self.ts.get_bluna_to_luna_rate()
+                luna_to_ust = await self.ts.get_luna_to_ust_rate()
+                rates = self.rates['bluna_luna']
+                threshold = self.thresholds['bluna_luna']
+                msg = (
+    				"```" +
+    				"Luna to bLUNA - {} bLUNA per Luna\n" +
+    				"bLUNA to Luna - {} bLUNA per Luna\n" +
+                    "Luna to UST   - {} UST per Luna" +
+    				"```").format(luna_to_bluna, bluna_to_luna, luna_to_ust)
+                # TODO: generalize this logic eventually
+                if (luna_to_bluna >= threshold[0] and rates[0] < threshold[0]) or (bluna_to_luna <= threshold[1] and rates[1] > threshold[1]):
+                    for uid in self.ping_list:
+                        msg += "<@{}> ".format(uid)
+                self.rates['bluna_luna'] = [luna_to_bluna, bluna_to_luna]
+                await self.log_channel.send(msg)
+            except KeyboardInterrupt:
+                return
+            except:
+                traceback.print_exc()
             await asyncio.sleep(self.interval)
 
 
