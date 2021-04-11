@@ -15,7 +15,7 @@ class TerraswapMonitorBot(discord.ext.commands.Bot):
             self.rates[pair] = [(0, float('inf'))]
         self.interval = self.config['interval']
         self.log_channel = None
-        self.ping_list = self.config['ping_list']
+        self.ping_role = int(self.config['ping_role'])
         super().__init__(command_prefix=self.config['command_prefix'])
 
     def run(self):
@@ -44,8 +44,7 @@ class TerraswapMonitorBot(discord.ext.commands.Bot):
     				"```").format(luna_to_bluna, bluna_to_luna, luna_to_ust)
                 # TODO: generalize this logic eventually
                 if (luna_to_bluna >= threshold[0] and rates[0] < threshold[0]) or (bluna_to_luna <= threshold[1] and rates[1] > threshold[1]):
-                    for uid in self.ping_list:
-                        msg += "<@{}> ".format(uid)
+                    msg += "<@&{}> ".format(self.ping_role)
                 self.rates['bluna_luna'] = [luna_to_bluna, bluna_to_luna]
                 await self.log_channel.send(msg)
             except KeyboardInterrupt:
@@ -78,6 +77,19 @@ async def threshold(ctx, forward_val:float=None, backward_val:float=None):
     bot.thresholds[pair] = [forward_val, backward_val]
     bot.rates[pair] = [0, float('inf')]
     await ctx.send("Updated thresholds to {}.".format(bot.thresholds[pair]))
+
+@bot.command()
+async def ping(ctx):
+    role = ctx.guild.get_role(bot.ping_role)
+    if not role:
+        await ctx.send("Could not find ping role.")
+        return
+    if role in ctx.author.roles:
+        await ctx.author.remove_roles(role)
+        await ctx.send("Removed {} from ping role.".format(ctx.author.mention))
+    else:
+        await ctx.author.add_roles(role)
+        await ctx.send("Added {} to ping role.".format(ctx.author.mention))
 
 if __name__ == '__main__':
     try:

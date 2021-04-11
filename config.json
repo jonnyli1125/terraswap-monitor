@@ -6,7 +6,7 @@
       "bluna_luna": [1.04, 1.01]
     },
     "log_channel": "",
-    "ping_list": [""],
+    "ping_role": "",
     "command_prefix": "!"
   },
   "terraswap": {
