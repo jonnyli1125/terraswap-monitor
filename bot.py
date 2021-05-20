@@ -12,7 +12,7 @@ class TerraswapMonitorBot(discord.ext.commands.Bot):
         self.rates = {}
         self.thresholds = self.config['thresholds']
         for pair in self.thresholds:
-            self.rates[pair] = [(0, float('inf'))]
+            self.rates[pair] = [0, float('inf')]
         self.interval = self.config['interval']
         self.log_channel = None
         self.ping_role = int(self.config['ping_role'])
